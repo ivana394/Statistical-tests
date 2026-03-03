@@ -1,24 +1,72 @@
-# Statistical Tests on Palmer Penguins Dataset
+Statistical Test Selection in R
+Hypothesis Testing Using the Palmer Penguins Dataset
 
-In this project, we conducted various statistical tests to demonstrate the process of selecting appropriate tests based on the types of variables involved. The dataset used for this analysis is the **Palmer Penguins** dataset, which contains measurements of different penguin species from three islands in the Palmer Archipelago, Antarctica. This project was done using the **R programming language**.
+This repository contains a structured statistical analysis notebook demonstrating how different hypothesis tests are selected based on variable types and distributional assumptions.
 
-# Objectives
+The analysis is conducted in R and implemented in a Jupyter Notebook.
 
-With this notebook I would like to demonstrate the usage of different statistical tests for hypothesis testing. We will work with the penguins dataset. 
-For a demonstration of statistical tests usage, we will define the hypotheses in such a way, taht we have: 
-* two categorical variables with more than two categories,
-* two numerical variables,
-* one categorical with more than two categories, and one numerical variable,
-* one categorical variable with two categories, and one numerical variable.
+Main Notebook
 
-We are seeting the hypotheses this way, because choosing appropriate statistical test depends on type of variables we want to test for. In this set up, we can show multiple different test for different scenarios. 
+selecting-the-appropriate-statistical-test.ipynb
 
-## Methodology
-We first assessed the **normality** of the continuous numerical variables, and the distribution of categorical variables within classes, using normality tests. This helped determine whether parametric or non-parametric tests were suitable for the next steps in the analysis. 
+The notebook walks through a series of predefined hypotheses using the Palmer Penguins dataset.
 
-## Conclusion
-This project demonstrated the importance of assessing data distributions and choosing the correct statistical tests when testing hypotheses. We explored relationships within the **Palmer Penguins** dataset and confirmed our hypotheses using a variety of statistical tests.
+Analyses Included
 
-## Tools used:
-- **R programming language**
+1. Species vs Island
 
+Crosstabulation
+
+Pearson’s Chi-square test of independence
+
+Interpretation of association
+
+2. Culmen Length vs Culmen Depth
+
+Descriptive statistics (mean, median, skewness, kurtosis)
+
+Density plots
+
+Shapiro–Wilk normality testing
+
+Spearman rank correlation
+
+Kendall tau correlation
+
+3. Species vs Flipper Length
+
+Group-wise normality testing
+
+Kruskal–Wallis test
+
+Dunn post-hoc test with Bonferroni correction
+
+4. Sex vs Body Mass (within species)
+
+Data cleaning
+
+Normality testing within groups
+
+Independent two-sample t-tests
+
+Focus of the Project
+
+This project demonstrates:
+
+formulation of statistical hypotheses
+
+selection of appropriate tests based on variable type
+
+handling of non-normal distributions
+
+use of non-parametric alternatives
+
+interpretation of statistical output
+
+The emphasis is on methodological reasoning and correct application of classical statistical tests.
+
+Dataset
+
+The analysis uses the Palmer Penguins dataset, which contains physical measurements of penguins from three islands in the Palmer Archipelago, Antarctica.
+
+Raw data is not stored in this repository.
