@@ -1,1 +1,275 @@
+---
+title: "Statistical Tests for Hypothesis Testing (Palmer Penguins)"
+author: "Ivana Radic"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+Introduction
+
+This notebook demonstrates how to choose and apply common statistical tests based on:
+
+variable types (categorical vs numeric),
+
+number of groups,
+
+distributional assumptions,
+
+the research question (association vs group differences).
+
+We use the Palmer Penguins dataset as a worked example.
+
+Objectives
+
+We demonstrate four common scenarios:
+
+Two categorical variables (multi-category) → association test
+
+Two numeric variables → correlation test
+
+One categorical variable (3+ groups) + one numeric variable → group comparison
+
+One categorical variable (2 groups) + one numeric variable → two-sample comparison
+
+Setup
+library(tidyverse)
+library(janitor)
+library(psych)
+library(gmodels)
+library(dunn.test)
+library(palmerpenguins)
+
+# Load data (portable)
+data("penguins")
+penguins_df <- penguins %>% 
+  clean_names()
+
+# Quick structure check
+str(penguins_df)
+Data overview (descriptive statistics)
+Species distribution
+penguins_df %>%
+  drop_na(species) %>%
+  count(species) %>%
+  ggplot(aes(x = reorder(species, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "Penguin species counts", x = NULL, y = "Count") +
+  theme_minimal()
+Summary by species (example: culmen length)
+penguins_df %>%
+  group_by(species) %>%
+  summarise(
+    n = sum(!is.na(bill_length_mm)),
+    min = min(bill_length_mm, na.rm = TRUE),
+    q1 = quantile(bill_length_mm, 0.25, na.rm = TRUE),
+    median = median(bill_length_mm, na.rm = TRUE),
+    mean = mean(bill_length_mm, na.rm = TRUE),
+    q3 = quantile(bill_length_mm, 0.75, na.rm = TRUE),
+    max = max(bill_length_mm, na.rm = TRUE)
+  )
+
+Note: In the palmerpenguins package, culmen variables are called bill_length_mm and bill_depth_mm.
+
+Hypotheses
+
+H1: Penguin species are associated with the island they inhabit.
+
+H2: Bill length is associated with bill depth.
+
+H3: Penguin species differ in flipper length.
+
+H4: Penguin body mass differs by sex (within species).
+
+H1 — Categorical vs Categorical (Chi-square)
+Question
+
+Are species and island associated?
+
+Variables
+
+species: categorical (3 levels)
+
+island: categorical (3 levels)
+
+Test choice
+
+Chi-square test of independence
+
+Check expected counts to confirm suitability
+
+df_h1 <- penguins_df %>% drop_na(species, island)
+
+tbl <- table(df_h1$species, df_h1$island)
+tbl
+
+chisq_res <- chisq.test(tbl)
+chisq_res
+
+# Expected counts (assumption check)
+chisq_res$expected
+Interpretation
+
+If p-value < 0.05, we reject H0 (independence) and conclude species and island are associated.
+
+H2 — Numeric vs Numeric (Correlation)
+Question
+
+Is bill length associated with bill depth?
+
+Variables
+
+bill_length_mm: numeric
+
+bill_depth_mm: numeric
+
+Assumption check (normality overview)
+
+We use Shapiro-Wilk as a quick diagnostic (note: it is sensitive in larger samples),
+and we also inspect density plots.
+
+df_h2 <- penguins_df %>% drop_na(bill_length_mm, bill_depth_mm)
+
+# Quick distribution plots
+ggplot(df_h2, aes(x = bill_length_mm)) + geom_density() + theme_minimal() +
+  labs(title = "Density: Bill length (mm)", x = "bill_length_mm", y = "Density")
+
+ggplot(df_h2, aes(x = bill_depth_mm)) + geom_density() + theme_minimal() +
+  labs(title = "Density: Bill depth (mm)", x = "bill_depth_mm", y = "Density")
+
+# Shapiro tests
+shapiro.test(df_h2$bill_length_mm)
+shapiro.test(df_h2$bill_depth_mm)
+Test choice
+
+If normality is questionable, use Spearman (rank correlation).
+We also show Kendall as a robustness check.
+
+spearman_res <- cor.test(df_h2$bill_length_mm, df_h2$bill_depth_mm, method = "spearman")
+spearman_res
+
+kendall_res <- cor.test(df_h2$bill_length_mm, df_h2$bill_depth_mm, method = "kendall")
+kendall_res
+Interpretation
+
+Report:
+
+correlation coefficient (rho or tau),
+
+p-value,
+
+direction and strength.
+
+H3 — Categorical (3+ groups) vs Numeric (Kruskal–Wallis + Dunn)
+Question
+
+Do species differ in flipper length?
+
+Variables
+
+species: categorical (3 levels)
+
+flipper_length_mm: numeric
+
+Assumption check (normality within groups)
+df_h3 <- penguins_df %>% drop_na(species, flipper_length_mm)
+
+df_h3 %>%
+  group_by(species) %>%
+  summarise(shapiro_p = shapiro.test(flipper_length_mm)$p.value, n = n())
+Test choice
+
+If at least one group deviates from normality, use Kruskal–Wallis.
+If significant, follow with Dunn post-hoc (Bonferroni).
+
+kw_res <- kruskal.test(flipper_length_mm ~ species, data = df_h3)
+kw_res
+
+# Post-hoc (pairwise comparisons)
+dunn_res <- dunn.test(df_h3$flipper_length_mm, df_h3$species, method = "bonferroni")
+dunn_res
+Interpretation
+
+Kruskal–Wallis tests whether at least one group differs.
+
+Dunn indicates which pairs differ after correction.
+
+H4 — Categorical (2 groups) vs Numeric (t-test within species)
+Question
+
+Does sex relate to body mass, within each species?
+
+Variables
+
+sex: categorical (male/female)
+
+body_mass_g: numeric
+
+Data cleaning
+df_h4 <- penguins_df %>%
+  filter(sex %in% c("male", "female")) %>%
+  drop_na(species, sex, body_mass_g)
+
+table(df_h4$sex)
+Assumption check (normality within sex groups, per species)
+df_h4 %>%
+  group_by(species, sex) %>%
+  summarise(shapiro_p = shapiro.test(body_mass_g)$p.value, n = n())
+Test choice + implementation
+
+Independent two-sample t-test per species (as in your notebook).
+
+t_results <- df_h4 %>%
+  group_by(species) %>%
+  summarise(
+    p_value = t.test(body_mass_g ~ sex)$p.value,
+    mean_male = mean(body_mass_g[sex == "male"]),
+    mean_female = mean(body_mass_g[sex == "female"]),
+    n_male = sum(sex == "male"),
+    n_female = sum(sex == "female")
+  )
+
+t_results
+Interpretation
+
+If p-value < 0.05, reject H0 and conclude body mass differs by sex (within species).
+
+Summary (What this notebook demonstrates)
+summary_table <- tibble(
+  hypothesis = c(
+    "H1: species ~ island",
+    "H2: bill_length ~ bill_depth",
+    "H3: flipper_length ~ species",
+    "H4: body_mass ~ sex (within species)"
+  ),
+  variable_types = c(
+    "categorical vs categorical",
+    "numeric vs numeric",
+    "categorical (3+) vs numeric",
+    "categorical (2) vs numeric"
+  ),
+  chosen_test = c(
+    "Chi-square",
+    "Spearman (+ Kendall)",
+    "Kruskal–Wallis + Dunn post-hoc",
+    "t-test per species"
+  )
+)
+
+summary_table
+Notes
+
+Claims about normality should not rely on a single test alone; visual inspection helps.
+
+For group comparisons, always consider effect sizes and confidence intervals when relevant.
+
+This notebook focuses on test selection logic and clear reporting, rather than maximizing model complexity.
+
+References
+
+Palmer Penguins dataset (R package: palmerpenguins)
