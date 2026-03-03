@@ -1,72 +1,86 @@
-Statistical Test Selection in R
-Hypothesis Testing Using the Palmer Penguins Dataset
+# 📊 Statistical Test Selection in R
 
-This repository contains a structured statistical analysis notebook demonstrating how different hypothesis tests are selected based on variable types and distributional assumptions.
+A structured hypothesis-testing notebook using the Palmer Penguins dataset.
 
-The analysis is conducted in R and implemented in a Jupyter Notebook.
+This project demonstrates how statistical tests are selected based on:
 
-Main Notebook
+- variable type  
+- number of groups  
+- distributional assumptions  
 
-selecting-the-appropriate-statistical-test.ipynb
+All analyses are implemented in **R** within a Jupyter Notebook.
 
-The notebook walks through a series of predefined hypotheses using the Palmer Penguins dataset.
+---
 
-Analyses Included
+## 📘 Main Notebook
 
-1. Species vs Island
+`selecting-the-appropriate-statistical-test.ipynb`
 
-Crosstabulation
+The notebook walks through four predefined hypotheses and applies corresponding statistical tests.
 
-Pearson’s Chi-square test of independence
+---
 
-Interpretation of association
+## 🔍 Analyses Included
 
-2. Culmen Length vs Culmen Depth
+### 1️⃣ Species vs Island  
+**Chi-square test of independence**
 
-Descriptive statistics (mean, median, skewness, kurtosis)
+- Crosstabulation  
+- Pearson’s Chi-square test  
+- Interpretation of association  
 
-Density plots
+---
 
-Shapiro–Wilk normality testing
+### 2️⃣ Culmen Length vs Culmen Depth  
+**Spearman & Kendall correlation**
 
-Spearman rank correlation
+- Descriptive statistics  
+- Density plots  
+- Shapiro–Wilk normality testing  
+- Spearman rank correlation  
+- Kendall tau correlation  
 
-Kendall tau correlation
+---
 
-3. Species vs Flipper Length
+### 3️⃣ Species vs Flipper Length  
+**Kruskal–Wallis test + Dunn post-hoc**
 
-Group-wise normality testing
+- Group-wise normality testing  
+- Kruskal–Wallis test  
+- Dunn test with Bonferroni correction  
+- Interpretation of pairwise differences  
 
-Kruskal–Wallis test
+---
 
-Dunn post-hoc test with Bonferroni correction
+### 4️⃣ Sex vs Body Mass (within species)  
+**Independent two-sample t-tests**
 
-4. Sex vs Body Mass (within species)
+- Data cleaning  
+- Normality testing within groups  
+- Independent t-tests performed separately per species  
+- Interpretation of mean differences  
 
-Data cleaning
+---
 
-Normality testing within groups
+## 🧠 Skills Demonstrated
 
-Independent two-sample t-tests
+- Hypothesis formulation  
+- Assumption-aware statistical testing  
+- Use of non-parametric alternatives  
+- Clear interpretation of statistical results  
+- Structured analytical workflow in R  
 
-Focus of the Project
+---
 
-This project demonstrates:
+## 🐧 Dataset
 
-formulation of statistical hypotheses
+The analysis uses the **Palmer Penguins** dataset  
+(physical measurements of penguins across three Antarctic islands).
 
-selection of appropriate tests based on variable type
+Raw data is not included in this repository.
 
-handling of non-normal distributions
+---
 
-use of non-parametric alternatives
+## 🎯 Purpose
 
-interpretation of statistical output
-
-The emphasis is on methodological reasoning and correct application of classical statistical tests.
-
-Dataset
-
-The analysis uses the Palmer Penguins dataset, which contains physical measurements of penguins from three islands in the Palmer Archipelago, Antarctica.
-
-Raw data is not stored in this repository.
+This notebook serves as a portfolio example of applied statistical reasoning and implementation of classical hypothesis testing methods in R.
